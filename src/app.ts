@@ -1,11 +1,15 @@
-const express = require('express');
+import express, { Express, Request, Response, Application } from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const app = express();
 const port = process.env.PORT || 3000;
 
 // middlewares or routes
-// e.g. 
+// e.g.
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('welcome 2 documed!')
 })
 

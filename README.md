@@ -27,6 +27,10 @@ Follow these steps to set up and run the application:
     
     npm start
 
+5. For development work, use hot reolad with: 
+
+    npm run dev
+
 The application will run on http://localhost:3000 by default. You can change the port in the src/app.js file or via the PORT environment variable.
 
 ### Scripts
