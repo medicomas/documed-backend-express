@@ -10,9 +10,9 @@ const port = process.env.PORT || 3000;
 // e.g.
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("welcome 2 documed!");
+  res.send("welcome 2 documed!!! :)");
 });
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+  console.log(`App listening on port: ${port}`);
 });
