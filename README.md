@@ -5,6 +5,7 @@
 - javascript
 - node js
 - express js
+- npx
 
 ### Requirements
 
