@@ -1,18 +1,15 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import dotenv from "dotenv";
+import cors from 'cors';
+import { router } from "./router";
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-// middlewares or routes
-// e.g.
+app
+  .use(cors())
+  .use(express.json())
+  .use(router);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("welcome 2 documed!!! :)");
-});
-
-app.listen(port, () => {
-  console.log(`App listening on port: ${port}`);
-});
+export { app };
