@@ -1,4 +1,4 @@
-## documed
+# documed
 
 ### Stack 
 
@@ -23,6 +23,7 @@ Follow these steps to set up and run the application:
     npm install
 
 3. Configure environment variables (if necessary).
+
 4. Start the application:
     
     npm start
@@ -51,7 +52,5 @@ Types would be feat, fix, build, ci, docs, style, refactor, test, etc.
 
 e.g. :
 feat(backend-template): initial project structure and setup
-
-
 
 #### Made with <3 by UNMSM
