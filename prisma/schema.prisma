@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id              Int           @id @default(autoincrement())
+  roles           RolesOnUser[]
+  email           String  @unique
+  hashed_password String
+  names           String
+  surnames        String
+  doctor          Doctor?
+  Admin           Admin?
+}
+
+model RolesOnUser {
+  userId Int
+  roleId Int
+
+  user Users    @relation(fields: [userId], references: [id])
+  role UserRole @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+}
+
+model UserRole {
+  id          Int           @id @default(autoincrement())
+  name        String
+  RolesOnUser RolesOnUser[]
+}
+
+model Admin {
+  user    Users @relation(fields: [id_User], references: [id])
+  id_User Int   @unique
+}
+
+model Doctor {
+  user           Users            @relation(fields: [id_User], references: [id])
+  id_User        Int              @unique
+  documentType   String
+  document       String           @unique
+  gender         String           @db.Char(1)
+  appointment    Appointments[]
+  MedicalHistory MedicalHistory[]
+}
+
+model Patient {
+  id           Int            @id @default(autoincrement())
+  names        String
+  surnames     String
+  documentType String
+  document     String         @unique
+  gender       String         @db.Char(1)
+  Appointments Appointments[]
+  Diagnose     Diagnose[]
+}
+
+model Appointments {
+  id         Int        @id @default(autoincrement())
+  id_doctor  Int
+  doctor     Doctor     @relation(fields: [id_doctor], references: [id_User])
+  id_patient Int
+  patient    Patient    @relation(fields: [id_patient], references: [id])
+  has_ended  Boolean    @default(false)
+  hour       DateTime   @updatedAt
+  anamnesis  String
+  Diagnose   Diagnose[]
+}
+
+model PreviousDisease {
+  id          Int      @id @default(autoincrement())
+  id_diagnose Int
+  diagnose    Diagnose @relation(fields: [id_diagnose], references: [id])
+  ICD10_code  String //fill with the API
+}
+
+model Diagnose {
+  id                 Int               @id @default(autoincrement())
+  id_patient         Int
+  patient            Patient           @relation(fields: [id_patient], references: [id])
+  id_appointment     Int
+  appointment        Appointments      @relation(fields: [id_appointment], references: [id])
+  id_previousDisease Int
+  previousDisease    PreviousDisease[]
+  ICD10_code         String
+  description        String
+  treatments         Treatment[]
+  MedicalHistory     MedicalHistory[]
+}
+
+model Treatment {
+  id          Int      @id @default(autoincrement())
+  id_diagnose Int
+  diagnose    Diagnose @relation(fields: [id_diagnose], references: [id])
+  medication  String
+  dose        String
+}
+
+model MedicalHistory {
+  id             Int      @id @default(autoincrement())
+  //patient       Patient    @relation(fields: [id_paciente], references: [id])
+  doctor         Doctor   @relation(fields: [id_medico], references: [id_User])
+  //treatment    Treatment @relation(fields: [id_tratamiento], references: [id])
+  diagnose       Diagnose @relation(fields: [id_diagnostico], references: [id])
+  //id_paciente    Int
+  id_medico      Int
+  //id_tratamiento Int
+  id_diagnostico Int
+  fecha          DateTime @updatedAt
+}

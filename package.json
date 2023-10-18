@@ -33,6 +33,7 @@
     "lint-staged": "^14.0.1",
     "prettier": "3.0.3",
     "prettier-eslint": "^15.0.1",
+    "prisma": "^5.4.2",
     "tsx": "3.12.10",
     "typescript": "^5.2.2"
   }
