@@ -1,7 +1,11 @@
 import { Router } from "express";
-export const router = Router();
+
+const router = Router();
+
 router.get("/", (req, res) =>
   res.send({
     status: "UP",
   }),
 );
+
+export { router };
