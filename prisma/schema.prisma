@@ -11,9 +11,14 @@ datasource db {
 }
 
 model Users {
-  id     Int           @id @default(autoincrement())
-  roles  RolesOnUser[]
-  doctor Doctor?
+  id              Int           @id @default(autoincrement())
+  roles           RolesOnUser[]
+  email           String  @unique
+  hashed_password String
+  names           String
+  surnames        String
+  doctor          Doctor?
+  Admin           Admin?
 }
 
 model RolesOnUser {
@@ -32,11 +37,14 @@ model UserRole {
   RolesOnUser RolesOnUser[]
 }
 
+model Admin {
+  user    Users @relation(fields: [id_User], references: [id])
+  id_User Int   @unique
+}
+
 model Doctor {
   user           Users            @relation(fields: [id_User], references: [id])
   id_User        Int              @unique
-  names          String
-  surnames       String
   documentType   String
   document       String           @unique
   gender         String           @db.Char(1)
