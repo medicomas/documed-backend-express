@@ -3,20 +3,42 @@ import { prisma } from "../db";
 
 const router = Router();
 
+// show all patients
 router.get("/", async (req, res) => {
-  const patients = await prisma.patient.findMany();
-  res.send(patients);
+  try {
+    const patients = await prisma.patient.findMany();
+    res.send(patients);
+  } catch (error) {
+    res.sendStatus(500);
+  }
 });
 
-router.get("/two", async (req, res) => {
-  const patientTwo = await prisma.patient.findUnique({
-    where: {
-      id: 1,
-    },
-  });
-  res.send(patientTwo);
+// search patient
+router.get("/:id", async (req, res) => {
+  try {
+    const patientId = parseInt(req.params.id);
+    if (isNaN(patientId) || patientId <= 0) {
+      res.sendStatus(400);
+    } else {
+      const foundPatient = await prisma.patient.findUnique({
+        where: {
+          id: patientId,
+        },
+      });
+      if (!foundPatient) {
+        res.sendStatus(404);
+      } else {
+        res.send(foundPatient);
+        console.log("patient succesfully found");
+      }
+    }
+  } catch (error) {
+    res.sendStatus(500);
+    console.error(error);
+  }
 });
 
+// create one patient
 router.post("/", async (req, res) => {
   try {
     const { names, surnames, documentType, document, gender } = req.body;
@@ -37,47 +59,89 @@ router.post("/", async (req, res) => {
     } else {
       const patient = await prisma.patient.create({ data: req.body });
       res.send(patient);
+      console.log(req.body);
     }
-    console.log(req.body);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 });
 
+// update one patient
 router.put("/:id", async (req, res) => {
   try {
     const { names, surnames, documentType, document, gender } = req.body;
     const patientId = parseInt(req.params.id);
 
-    if (
-      typeof names !== "string" ||
-      names.trim() === "" ||
-      typeof surnames !== "string" ||
-      surnames.trim() === "" ||
-      typeof documentType !== "string" ||
-      documentType.trim() === "" ||
-      typeof document !== "string" ||
-      document.trim() === "" ||
-      typeof gender !== "string" ||
-      gender.trim() === ""
-    ) {
+    if (isNaN(patientId) || patientId <= 0) {
       res.sendStatus(400);
     } else {
-      const updatedPatient = await prisma.patient.update({
+      const foundPatient = await prisma.patient.findUnique({
         where: {
           id: patientId,
         },
-        data: {
-          names,
-          surnames,
-          documentType,
-          document,
-          gender,
+      });
+      if (!foundPatient) {
+        res.sendStatus(404);
+      } else {
+        if (
+          (names && (typeof names !== "string" || names.trim() === "")) ||
+          (surnames &&
+            (typeof surnames !== "string" || surnames.trim() === "")) ||
+          (documentType &&
+            (typeof documentType !== "string" || documentType.trim() === "")) ||
+          (document &&
+            (typeof document !== "string" || document.trim() === "")) ||
+          (gender && (typeof gender !== "string" || gender.trim() === ""))
+        ) {
+          res.sendStatus(400);
+        } else {
+          const updatedPatient = await prisma.patient.update({
+            where: {
+              id: patientId,
+            },
+            data: {
+              names,
+              surnames,
+              documentType,
+              document,
+              gender,
+            },
+          });
+          res.send(updatedPatient);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+//delete one patient
+router.delete("/:id", async (req, res) => {
+  try {
+    const patientId = parseInt(req.params.id);
+
+    if (isNaN(patientId) || patientId <= 0) {
+      res.sendStatus(400);
+    } else {
+      const foundPatient = await prisma.patient.findUnique({
+        where: {
+          id: patientId,
         },
       });
-      res.send(updatedPatient);
-      console.log(updatedPatient);
+      if (!foundPatient) {
+        res.sendStatus(404);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const deletedPatient = await prisma.patient.delete({
+          where: {
+            id: patientId,
+          },
+        });
+        res.send("succesfully deleted patient!");
+      }
     }
   } catch (error) {
     console.error(error);
