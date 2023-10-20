@@ -53,7 +53,8 @@ router.post("/", async (req, res) => {
       typeof document !== "string" ||
       document.trim() === "" ||
       typeof gender !== "string" ||
-      gender.trim() === ""
+      gender.trim() === "" ||
+      !isValidGender(gender)
     ) {
       res.sendStatus(400);
     } else {
@@ -92,7 +93,10 @@ router.put("/:id", async (req, res) => {
             (typeof documentType !== "string" || documentType.trim() === "")) ||
           (document &&
             (typeof document !== "string" || document.trim() === "")) ||
-          (gender && (typeof gender !== "string" || gender.trim() === ""))
+          (gender &&
+            (typeof gender !== "string" ||
+              gender.trim() === "" ||
+              !isValidGender(gender)))
         ) {
           res.sendStatus(400);
         } else {
@@ -134,13 +138,12 @@ router.delete("/:id", async (req, res) => {
       if (!foundPatient) {
         res.sendStatus(404);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const deletedPatient = await prisma.patient.delete({
           where: {
             id: patientId,
           },
         });
-        res.send("succesfully deleted patient!");
+        res.send(deletedPatient);
       }
     }
   } catch (error) {
@@ -148,6 +151,10 @@ router.delete("/:id", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+function isValidGender(gender: string) {
+  return gender === "M" || gender === "F";
+}
 
 export { router };
 
