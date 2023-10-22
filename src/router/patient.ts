@@ -29,7 +29,6 @@ router.get("/:id", async (req, res) => {
         res.sendStatus(404);
       } else {
         res.send(foundPatient);
-        console.log("patient succesfully found");
       }
     }
   } catch (error) {
@@ -71,6 +70,8 @@ router.post("/", async (req, res) => {
 // update one patient
 router.put("/:id", async (req, res) => {
   try {
+    // TODO: check if unique fields are already taken
+    //       e.g. this throws an error if 'document' is already taken by another patient
     const { names, surnames, documentType, document, gender } = req.body;
     const patientId = parseInt(req.params.id);
 
