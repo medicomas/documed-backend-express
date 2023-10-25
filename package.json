@@ -10,11 +10,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "npx eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "setupdb": "tsx scripts/setup-db.ts"
   },
   "author": "medicomas",
   "dependencies": {
     "@prisma/client": "^5.4.2",
+    "chalk": "^5.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "4.18.2",
