@@ -1,16 +1,41 @@
 import { prisma } from "../src/db";
 import chalk from "chalk";
 
+const SUPER_USER = {
+  email: "damaris@ieee.org",
+  hashed_password:
+    "51227fbc10cf81386272858f9b7d0261adb477d301154fbf9188a8a948cd9bdd",
+  names: "Damaris Marian",
+  surnames: "Del Carpio Martinez",
+  roles: {
+    create: [{ name: "ADMIN" }, { name: "DOCTOR" }],
+  },
+};
+
 async function main() {
-  doing("Creating roles");
-  await prisma.$executeRaw`DELETE FROM UserRole`;
-  await prisma.$executeRaw`ALTER TABLE UserRole AUTO_INCREMENT = 1`;
+  // Check if the super user already exists
+  const superUserExists = await prisma.users.findFirst({
+    where: { email: "damaris@ieee.org" },
+  });
 
-  await prisma.userRole.deleteMany();
-  const adminRole = await prisma.userRole.create({ data: { name: "ADMIN" } });
-  const doctorRole = await prisma.userRole.create({ data: { name: "DOCTOR" } });
+  if (!superUserExists) {
+    doing("Creating roles");
+    await prisma.$executeRaw`DELETE FROM UserRole`;
+    await prisma.$executeRaw`ALTER TABLE UserRole AUTO_INCREMENT = 1`;
 
-  done("Created roles ADMIN =", adminRole.id, "DOCTOR =", doctorRole.id);
+    const admin = await prisma.userRole.create({ data: { name: "ADMIN" } });
+    const doctor = await prisma.userRole.create({ data: { name: "DOCTOR" } });
+
+    done("Created roles ADMIN =", admin.id, "DOCTOR =", doctor.id);
+    doing("Creating super user");
+
+    const superUser = await prisma.users.create({
+      data: SUPER_USER,
+    });
+    done("Created super user with id =", superUser.id);
+  } else {
+    console.log("Super user already exists.");
+  }
 }
 
 main()
