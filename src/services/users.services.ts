@@ -20,7 +20,7 @@ export class UsersService {
       return { user: null, error: result.error.errors[0].message, status: 400 };
     }
 
-    const { email, names, surnames, password, roles } = result.data;
+    const { email, names, surnames, password } = result.data;
     const hashed_password = this.hashPassword(password);
 
     try {
@@ -30,15 +30,6 @@ export class UsersService {
           surnames,
           hashed_password,
           email,
-          roles: {
-            create: roles.map((roleName) => ({
-              role: {
-                create: {
-                  name: roleName,
-                },
-              },
-            })),
-          },
         },
       });
       return { user, error: null, status: 201 };
@@ -63,12 +54,7 @@ export class UsersService {
         include: {
           roles: {
             select: {
-              userId: true,
-              role: {
-                select: {
-                  name: true,
-                },
-              },
+              name: true,
             },
           },
         },
