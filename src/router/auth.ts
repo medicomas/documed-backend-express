@@ -1,23 +1,10 @@
 import jwt from "jsonwebtoken";
-import { z } from "zod";
+import { userLoginSchema } from "../schemas/user.schema";
+import { sha256 } from "../utils";
 import { Router } from "express";
 import { prisma } from "../db";
 
 const router = Router();
-
-const userLoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-import crypto from "node:crypto";
-
-function sha256(input: string) {
-  // crea el aglrotimo
-  const hash = crypto.createHash("sha256");
-  hash.update(input);
-  return hash.digest("hex");
-}
 
 const ONE_MONTH = 30 * 24 * 60 * 60;
 
