@@ -11,14 +11,6 @@ CREATE TABLE `Users` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `RolesOnUser` (
-    `userId` INTEGER NOT NULL,
-    `roleId` INTEGER NOT NULL,
-
-    PRIMARY KEY (`userId`, `roleId`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `UserRole` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -110,11 +102,14 @@ CREATE TABLE `MedicalHistory` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- AddForeignKey
-ALTER TABLE `RolesOnUser` ADD CONSTRAINT `RolesOnUser_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateTable
+CREATE TABLE `_UserRoleToUsers` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
 
--- AddForeignKey
-ALTER TABLE `RolesOnUser` ADD CONSTRAINT `RolesOnUser_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `UserRole`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+    UNIQUE INDEX `_UserRoleToUsers_AB_unique`(`A`, `B`),
+    INDEX `_UserRoleToUsers_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
 ALTER TABLE `Admin` ADD CONSTRAINT `Admin_id_User_fkey` FOREIGN KEY (`id_User`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -145,3 +140,9 @@ ALTER TABLE `MedicalHistory` ADD CONSTRAINT `MedicalHistory_id_medico_fkey` FORE
 
 -- AddForeignKey
 ALTER TABLE `MedicalHistory` ADD CONSTRAINT `MedicalHistory_id_diagnostico_fkey` FOREIGN KEY (`id_diagnostico`) REFERENCES `Diagnose`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_UserRoleToUsers` ADD CONSTRAINT `_UserRoleToUsers_A_fkey` FOREIGN KEY (`A`) REFERENCES `UserRole`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_UserRoleToUsers` ADD CONSTRAINT `_UserRoleToUsers_B_fkey` FOREIGN KEY (`B`) REFERENCES `Users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

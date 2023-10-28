@@ -12,7 +12,7 @@ datasource db {
 
 model Users {
   id              Int           @id @default(autoincrement())
-  roles           RolesOnUser[]
+  roles           UserRole[]
   email           String  @unique
   hashed_password String
   names           String
@@ -21,20 +21,10 @@ model Users {
   Admin           Admin?
 }
 
-model RolesOnUser {
-  userId Int
-  roleId Int
-
-  user Users    @relation(fields: [userId], references: [id])
-  role UserRole @relation(fields: [roleId], references: [id])
-
-  @@id([userId, roleId])
-}
-
 model UserRole {
   id          Int           @id @default(autoincrement())
   name        String
-  RolesOnUser RolesOnUser[]
+  users       Users[]
 }
 
 model Admin {
