@@ -32,11 +32,7 @@ export class UsersService {
           email,
           roles: {
             create: roles.map((roleName) => ({
-              role: {
-                create: {
-                  name: roleName,
-                },
-              },
+              name: roleName,
             })),
           },
         },
@@ -61,16 +57,7 @@ export class UsersService {
     try {
       const users = await prisma.users.findMany({
         include: {
-          roles: {
-            select: {
-              userId: true,
-              role: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
+          roles: true,
         },
       });
       return { users, error: null, status: 200 };
@@ -104,6 +91,7 @@ export class UsersService {
       }
       return { user, error: null, status: 200 };
     } catch (error) {
+      console.log({ error });
       return { user: null, error: "something went wrong!", status: 500 };
     }
   }
