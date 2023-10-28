@@ -52,5 +52,10 @@ export const updateUserSchema = z.object({
 
 export const idSchema = z.number().min(1).int();
 
+export const userLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UserRoleInput = z.infer<typeof userRoleSchema>;

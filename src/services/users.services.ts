@@ -32,7 +32,11 @@ export class UsersService {
           email,
           roles: {
             create: roles.map((roleName) => ({
-              name: roleName,
+              role: {
+                create: {
+                  name: roleName,
+                },
+              },
             })),
           },
         },
@@ -59,8 +63,12 @@ export class UsersService {
         include: {
           roles: {
             select: {
-              id: true,
-              name: true,
+              userId: true,
+              role: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -107,7 +115,7 @@ export class UsersService {
       return { user: null, error: result.error.errors[0].message, status: 400 };
     }
 
-    const { names, surnames, roles } = result.data;
+    const { names, surnames } = result.data;
 
     try {
       const user = await prisma.users.update({
@@ -117,11 +125,7 @@ export class UsersService {
         data: {
           names,
           surnames,
-          roles: {
-            create: roles?.map((roleName) => ({
-              name: roleName,
-            })),
-          },
+          // roles: [], // TODO: update roles
         },
       });
       return { user, error: null, status: 200 };
