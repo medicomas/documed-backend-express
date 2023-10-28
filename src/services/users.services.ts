@@ -20,7 +20,7 @@ export class UsersService {
       return { user: null, error: result.error.errors[0].message, status: 400 };
     }
 
-    const { email, names, surnames, password } = result.data;
+    const { email, names, surnames, password, roles } = result.data;
     const hashed_password = this.hashPassword(password);
 
     try {
@@ -30,6 +30,11 @@ export class UsersService {
           surnames,
           hashed_password,
           email,
+          roles: {
+            create: roles.map((roleName) => ({
+              name: roleName,
+            })),
+          },
         },
       });
       return { user, error: null, status: 201 };
@@ -52,11 +57,7 @@ export class UsersService {
     try {
       const users = await prisma.users.findMany({
         include: {
-          roles: {
-            select: {
-              name: true,
-            },
-          },
+          roles: true,
         },
       });
       return { users, error: null, status: 200 };
@@ -90,6 +91,7 @@ export class UsersService {
       }
       return { user, error: null, status: 200 };
     } catch (error) {
+      console.log({ error });
       return { user: null, error: "something went wrong!", status: 500 };
     }
   }
