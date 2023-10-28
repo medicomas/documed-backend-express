@@ -11,9 +11,9 @@ datasource db {
 }
 
 model Users {
-  id              Int           @id @default(autoincrement())
+  id              Int        @id @default(autoincrement())
   roles           UserRole[]
-  email           String  @unique
+  email           String     @unique
   hashed_password String
   names           String
   surnames        String
@@ -22,9 +22,9 @@ model Users {
 }
 
 model UserRole {
-  id          Int           @id @default(autoincrement())
-  name        String
-  users       Users[]
+  id    Int     @id @default(autoincrement())
+  name  String
+  users Users[]
 }
 
 model Admin {
@@ -49,6 +49,8 @@ model Patient {
   documentType String
   document     String         @unique
   gender       String         @db.Char(1)
+  phone_number String
+  birthdate    DateTime       @db.Date
   Appointments Appointments[]
   Diagnose     Diagnose[]
 }
@@ -60,7 +62,7 @@ model Appointments {
   id_patient Int
   patient    Patient    @relation(fields: [id_patient], references: [id])
   has_ended  Boolean    @default(false)
-  hour       DateTime   @updatedAt
+  hour       DateTime
   anamnesis  String
   Diagnose   Diagnose[]
 }
@@ -96,13 +98,9 @@ model Treatment {
 
 model MedicalHistory {
   id             Int      @id @default(autoincrement())
-  //patient       Patient    @relation(fields: [id_paciente], references: [id])
   doctor         Doctor   @relation(fields: [id_medico], references: [id_User])
-  //treatment    Treatment @relation(fields: [id_tratamiento], references: [id])
   diagnose       Diagnose @relation(fields: [id_diagnostico], references: [id])
-  //id_paciente    Int
   id_medico      Int
-  //id_tratamiento Int
   id_diagnostico Int
-  fecha          DateTime @updatedAt
+  fecha          DateTime @db.Date
 }
