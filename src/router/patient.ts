@@ -1,12 +1,61 @@
+import jwt from "jsonwebtoken";
 import { Router } from "express";
 import { PatientService } from "../services/patient.services";
 
 const router = Router();
 const service = new PatientService();
 
+type UserClaims = {
+  user_id: number;
+  iat: number;
+  exp: number;
+};
+
 // show all patients
 router.get("/", async (req, res) => {
+  if (!req.headers.authorization) {
+    res.status(401).send({
+      error: "Unauthorized",
+    });
+    return;
+  }
+
+  const splitHeader = req.headers.authorization.split(" ");
+
+  if (
+    splitHeader[0] !== "Bearer" ||
+    splitHeader.length !== 2 ||
+    !splitHeader[1]
+  ) {
+    res.status(401).send({
+      error: "Unauthorized",
+    });
+    return;
+  }
+
+  const token = splitHeader[1]; // user's JWT token
+
+  try {
+    const claims = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string,
+    ) as UserClaims;
+    console.log({ claims });
+  } catch {
+    res.status(401).send({
+      error: "Unauthorized",
+    });
+    return;
+  }
+
+  // <header>.<claims>.<signature>
+  //oye sácame los claims
+
+  // token -> claims
+  // claims -> user_id
+  // user_id -> User
   const { patients, error } = await service.getAllPatients();
+
   if (error) {
     res.status(500).send({
       error: error,

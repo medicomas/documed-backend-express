@@ -4,7 +4,6 @@ export {};
 declare global {
   namespace Express {
     export interface Request {
-      readonly language?: string;
       user?: number;
     }
   }

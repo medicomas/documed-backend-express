@@ -14,7 +14,7 @@ readdirSync(ROUTING_DIRECTORY).forEach(async (file) => {
 
   try {
     const module = await import(`./${route}`);
-    router.use(`/${route}`, module.router);
+    router.use(`/api/v1/${route}`, module.router);
   } catch (err) {
     console.log(err);
   }
