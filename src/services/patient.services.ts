@@ -59,14 +59,22 @@ export class PatientService {
       };
     }
 
-    const dataResult = createPatientSchema.safeParse(patientData);
+    const dataResult = createPatientSchema.partial().safeParse(patientData);
+
+    if (!dataResult.success) {
+      return {
+        patient: null,
+        error: dataResult.error.message,
+        status: 400,
+      };
+    }
 
     try {
       const updatedPatient = await prisma.patient.update({
         where: {
           id: idResult.data,
         },
-        data: dataResult,
+        data: dataResult.data,
       });
       return {
         patient: updatedPatient,
@@ -74,6 +82,7 @@ export class PatientService {
         status: 200,
       };
     } catch (e) {
+      console.log({ e });
       return {
         patient: null,
         error: "something went wrong",
