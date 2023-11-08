@@ -10,97 +10,134 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
+// check ✅
+model User {
   id              Int        @id @default(autoincrement())
-  roles           UserRole[]
   email           String     @unique
   hashed_password String
   names           String
   surnames        String
   doctor          Doctor?
   Admin           Admin?
+  roles           UserRole[]
 }
 
+// check ✅
 model UserRole {
-  id    Int     @id @default(autoincrement())
+  id    Int    @id @default(autoincrement())
   name  String
-  users Users[]
+  users User[]
 }
 
+// check ✅
 model Admin {
-  user    Users @relation(fields: [id_User], references: [id])
-  id_User Int   @unique
+  id_user Int @unique
+
+  user User @relation(fields: [id_user], references: [id])
 }
 
+// check ✅
 model Doctor {
-  user           Users            @relation(fields: [id_User], references: [id])
-  id_User        Int              @unique
+  user           User             @relation(fields: [id_user], references: [id])
+  id_user        Int              @unique
   documentType   String
   document       String           @unique
   gender         String           @db.Char(1)
-  appointment    Appointments[]
+  appointment    Appointment[]
   MedicalHistory MedicalHistory[]
 }
 
+// check ✅
 model Patient {
-  id           Int            @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   names        String
   surnames     String
   documentType String
-  document     String         @unique
-  gender       String         @db.Char(1)
-  phone_number String
-  birthdate    DateTime       @db.Date
-  Appointments Appointments[]
-  Diagnose     Diagnose[]
+  document     String        @unique
+  gender       String        @db.Char(1)
+  phone_number String // is this optional?
+  birthdate    DateTime?     @db.Date
+  appointments Appointment[]
 }
 
-model Appointments {
-  id         Int        @id @default(autoincrement())
-  id_doctor  Int
-  doctor     Doctor     @relation(fields: [id_doctor], references: [id_User])
-  id_patient Int
-  patient    Patient    @relation(fields: [id_patient], references: [id])
-  has_ended  Boolean    @default(false)
-  hour       DateTime
-  anamnesis  String
-  Diagnose   Diagnose[]
+// Consulta
+// ========
+// Las consultas representan la información recolectada de un paciente
+// en una visita a la clínica
+model Appointment {
+  id                     Int      @id @default(autoincrement())
+  id_doctor              Int
+  id_patient             Int
+  has_ended              Boolean  @default(false)
+  date                   DateTime
+  anamnesis              String /// Relato cronológico
+  id_workplan            Int      @unique
+  id_vitalsigns          Int      @unique
+  id_physicalexploration Int      @unique
+
+  vital_signs          VitalSigns          @relation(fields: [id_vitalsigns], references: [id])
+  physical_exploration PhysicalExploration @relation(fields: [id_physicalexploration], references: [id])
+  workplan             WorkPlan            @relation(fields: [id_workplan], references: [id])
+  patient              Patient             @relation(fields: [id_patient], references: [id])
+  doctor               Doctor              @relation(fields: [id_doctor], references: [id_user])
 }
 
-model PreviousDisease {
-  id          Int      @id @default(autoincrement())
-  id_diagnose Int
-  diagnose    Diagnose @relation(fields: [id_diagnose], references: [id])
-  ICD10_code  String //fill with the API
+/// Constantes Vitales
+model VitalSigns {
+  id                      Int          @id @default(autoincrement())
+  appointment             Appointment?
+  presion_arterial        Float?
+  temperatura             Float?
+  frecuencia_respiratoria Float?
+  frecuencia_cardiaca     Float?
+  peso                    Float?
+  talla                   Float?
+  imc                     Float?
+}
+
+/// Exploración Física
+model PhysicalExploration {
+  id               Int          @id @default(autoincrement())
+  appointment      Appointment?
+  abdomen_y_pelvis String?
+  ano_y_recto      String?
+  aspecto_general  String?
+  cabeza_y_cuello  String?
+  cardiovascular   String?
+  cavidad_oral     String?
+  genito_urinario  String?
+  locomotor        String?
+  neurologico      String?
+}
+
+/// Plan de Trabajo
+model WorkPlan {
+  id          Int          @id @default(autoincrement())
+  indications String
+  appointment Appointment?
 }
 
 model Diagnose {
-  id                 Int               @id @default(autoincrement())
-  id_patient         Int
-  patient            Patient           @relation(fields: [id_patient], references: [id])
-  id_appointment     Int
-  appointment        Appointments      @relation(fields: [id_appointment], references: [id])
-  id_previousDisease Int
-  previousDisease    PreviousDisease[]
-  ICD10_code         String
-  description        String
-  treatments         Treatment[]
-  MedicalHistory     MedicalHistory[]
+  id              Int              @id @default(autoincrement())
+  id_workplan     Int
+  ICD10_code      String
+  medical_history MedicalHistory[]
 }
 
 model Treatment {
-  id          Int      @id @default(autoincrement())
-  id_diagnose Int
-  diagnose    Diagnose @relation(fields: [id_diagnose], references: [id])
-  medication  String
-  dose        String
+  id             Int    @id @default(autoincrement())
+  id_appointment Int
+  id_workplan    Int
+  medication     String
+  dose           String
 }
 
 model MedicalHistory {
   id             Int      @id @default(autoincrement())
-  doctor         Doctor   @relation(fields: [id_medico], references: [id_User])
-  diagnose       Diagnose @relation(fields: [id_diagnostico], references: [id])
-  id_medico      Int
+  id_doctor      Int
   id_diagnostico Int
-  fecha          DateTime @db.Date
+  date           DateTime @db.Date
+
+  doctor   Doctor   @relation(fields: [id_doctor], references: [id_user])
+  diagnose Diagnose @relation(fields: [id_diagnostico], references: [id])
 }
