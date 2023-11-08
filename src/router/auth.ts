@@ -18,7 +18,7 @@ router.post("/login", async (req, res) => {
     return;
   }
 
-  const userLogin = await prisma.users.findUnique({
+  const userLogin = await prisma.user.findUnique({
     where: {
       email: validCredential.data.email,
       hashed_password: sha256(validCredential.data.password),

@@ -14,7 +14,7 @@ const SUPER_USER = {
 
 async function main() {
   // Check if the super user already exists
-  const superUserExists = await prisma.users.findFirst({
+  const superUserExists = await prisma.user.findFirst({
     where: { email: "damaris@ieee.org" },
   });
 
@@ -29,7 +29,7 @@ async function main() {
     done("Created roles ADMIN =", admin.id, "DOCTOR =", doctor.id);
     doing("Creating super user");
 
-    const superUser = await prisma.users.create({
+    const superUser = await prisma.user.create({
       data: SUPER_USER,
     });
     done("Created super user with id =", superUser.id);

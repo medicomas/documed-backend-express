@@ -24,7 +24,7 @@ export class UsersService {
     const hashed_password = this.hashPassword(password);
 
     try {
-      const user = await prisma.users.create({
+      const user = await prisma.user.create({
         data: {
           names,
           surnames,
@@ -55,7 +55,7 @@ export class UsersService {
 
   async getAllUsers() {
     try {
-      const users = await prisma.users.findMany({
+      const users = await prisma.user.findMany({
         include: {
           roles: true,
         },
@@ -74,7 +74,7 @@ export class UsersService {
     const { data: userId } = result;
 
     try {
-      const user = await prisma.users.findFirst({
+      const user = await prisma.user.findFirst({
         where: {
           id: userId,
         },
@@ -106,7 +106,7 @@ export class UsersService {
     const { names, surnames } = result.data;
 
     try {
-      const user = await prisma.users.update({
+      const user = await prisma.user.update({
         where: {
           id: Number(id),
         },
@@ -135,7 +135,7 @@ export class UsersService {
   async changeUserPassword(id: string, newPassword: string) {
     const hashed_password = this.hashPassword(newPassword);
     try {
-      const user = await prisma.users.update({
+      const user = await prisma.user.update({
         where: {
           id: Number(id),
         },
@@ -165,7 +165,7 @@ export class UsersService {
     }
 
     try {
-      const user = await prisma.users.delete({
+      const user = await prisma.user.delete({
         where: {
           id: userId,
         },
