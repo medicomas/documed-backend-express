@@ -96,9 +96,9 @@ export class AppointmentService {
     }
   }
 
-  // workplan -> updatedWorkplan
-  // vital signs -> updated
-  // physical explorationid: number
+  // workplan -> updateWorkplan
+  // vital signs -> updateVitalSigns
+  // physical exploration -> updatePhysicalExploration
 
   async updateVitalSigns(id_appointment: number, vitalSignsData: object) {
     const idResult = idSchema.safeParse(id_appointment);

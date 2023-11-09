@@ -1,14 +1,17 @@
 import { Router } from "express";
 import { readdirSync } from "fs";
-
-// Routes that shouldn't be visible to the router
-const IGNORED_ROUTES = ["index", "router"];
-const ROUTING_DIRECTORY = __dirname;
+import { docsHandler, docsStatics } from "../docs/handler";
 
 // The main router that will be used in src/server.ts
 const router = Router();
 
-readdirSync(ROUTING_DIRECTORY).forEach(async (file) => {
+router.use("/docs", docsStatics);
+router.get("/docs", docsHandler);
+
+// Routes that shouldn't be visible to the router
+const IGNORED_ROUTES = ["index"];
+
+readdirSync(__dirname).forEach(async (file) => {
   const route = file.split(".")[0];
   if (IGNORED_ROUTES.includes(route)) return;
 
