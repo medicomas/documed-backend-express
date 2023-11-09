@@ -1,6 +1,9 @@
 name: deploy-on-digital-ocean
 run-name: ${{ github.actor }} is deploying the Documed backend 🐢
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
   deploy-app:
     runs-on: ubuntu-latest
