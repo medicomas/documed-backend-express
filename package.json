@@ -5,12 +5,13 @@
   "main": "app.js",
   "scripts": {
     "build": "npx tsc",
+    "build:digitalocean": "npm install --production=false && npm run build && npm ci",
     "start": "node dist/src/server.js",
     "dev": "tsx watch src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint 'src/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "npx eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
-    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production'){process.exit(1)} \" || husky install",
+    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production') process.exit(1) \" || husky install",
     "setupdb": "tsx scripts/setup-db.ts"
   },
   "author": "medicomas",
