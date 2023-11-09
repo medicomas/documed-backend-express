@@ -1,0 +1,12 @@
+name: deploy-on-digital-ocean
+run-name: ${{ github.actor }} is deploying the Documed backend 🐢
+on: [push]
+jobs:
+  deploy-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: DigitalOcean App Platform deployment
+        uses: digitalocean/app_action@v1.1.5
+        with:
+          app_name: medicomas
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
