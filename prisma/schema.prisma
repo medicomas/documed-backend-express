@@ -12,20 +12,22 @@ datasource db {
 
 // check ✅
 model User {
-  id              Int        @id @default(autoincrement())
-  email           String     @unique
+  id              Int    @id @default(autoincrement())
+  email           String @unique
   hashed_password String
   names           String
   surnames        String
-  doctor          Doctor?
-  Admin           Admin?
-  roles           UserRole[]
+
+  doctor Doctor?
+  Admin  Admin?
+  roles  UserRole[]
 }
 
 // check ✅
 model UserRole {
-  id    Int    @id @default(autoincrement())
-  name  String
+  id   Int    @id @default(autoincrement())
+  name String
+
   users User[]
 }
 
@@ -38,53 +40,64 @@ model Admin {
 
 // check ✅
 model Doctor {
-  user           User             @relation(fields: [id_user], references: [id])
-  id_user        Int              @unique
-  documentType   String
-  document       String           @unique
-  gender         String           @db.Char(1)
-  appointment    Appointment[]
+  user         User   @relation(fields: [id_user], references: [id])
+  id_user      Int    @unique
+  documentType String
+  document     String @unique
+  gender       String @db.Char(1)
+
+  appointment Appointment[]
 }
 
 // check ✅
 model Patient {
-  id           Int           @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   names        String
   surnames     String
   documentType String
-  document     String        @unique
-  gender       String        @db.Char(1)
+  document     String    @unique
+  gender       String    @db.Char(1)
   phone_number String // is this optional?
-  birthdate    DateTime?     @db.Date
+  birthdate    DateTime? @db.Date
+
   appointments Appointment[]
 }
 
-// Consulta
-// ========
-// Las consultas representan la información recolectada de un paciente
-// en una visita a la clínica
+/// Cita
+/// Las citas son creadas inicialmente sin consulta. Una cita se puede dibujar en
+/// el calendario, y tiene una fecha y hora determinada.
 model Appointment {
-  id                     Int      @id @default(autoincrement())
-  id_doctor              Int
-  id_patient             Int
-  has_ended              Boolean  @default(false)
-  date                   DateTime
-  anamnesis              String /// Relato cronológico
-  id_workplan            Int      @unique
-  id_vitalsigns          Int      @unique
-  id_physicalexploration Int      @unique
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  has_attended Boolean  @default(false)
+  id_patient   Int
+  id_doctor    Int
 
+  patient      Patient       @relation(fields: [id_patient], references: [id])
+  doctor       Doctor        @relation(fields: [id_doctor], references: [id_user])
+  consultation Consultation?
+}
+
+/// Consulta
+/// Las consultas representan la información recolectada de un paciente
+/// en una cita (Appointment) a la clínica
+model Consultation {
+  id                     Int    @id @default(autoincrement())
+  anamnesis              String /// Relato cronológico
+  id_appointment         Int    @unique /// Cita en la que la consulta fue creada.
+  id_vitalsigns          Int    @unique
+  id_physicalexploration Int    @unique
+  id_workplan            Int    @unique
+
+  appointment          Appointment         @relation(fields: [id_appointment], references: [id])
   vital_signs          VitalSigns          @relation(fields: [id_vitalsigns], references: [id])
   physical_exploration PhysicalExploration @relation(fields: [id_physicalexploration], references: [id])
   workplan             WorkPlan            @relation(fields: [id_workplan], references: [id])
-  patient              Patient             @relation(fields: [id_patient], references: [id])
-  doctor               Doctor              @relation(fields: [id_doctor], references: [id_user])
 }
 
 /// Constantes Vitales
 model VitalSigns {
-  id                      Int          @id @default(autoincrement())
-  appointment             Appointment?
+  id                      Int    @id @default(autoincrement())
   presion_arterial        Float?
   temperatura             Float?
   frecuencia_respiratoria Float?
@@ -92,43 +105,49 @@ model VitalSigns {
   peso                    Float?
   talla                   Float?
   imc                     Float?
+
+  consultation Consultation?
 }
 
 /// Exploración Física
 model PhysicalExploration {
-  id               Int          @id @default(autoincrement())
-  appointment      Appointment?
-  abdomen_y_pelvis String       @default("")
-  ano_y_recto      String       @default("")
-  aspecto_general  String       @default("")
-  cabeza_y_cuello  String       @default("")
-  cardiovascular   String       @default("")
-  cavidad_oral     String       @default("")
-  genito_urinario  String       @default("")
-  locomotor        String       @default("")
-  neurologico      String       @default("")
+  id               Int    @id @default(autoincrement())
+  abdomen_y_pelvis String @default("")
+  ano_y_recto      String @default("")
+  aspecto_general  String @default("")
+  cabeza_y_cuello  String @default("")
+  cardiovascular   String @default("")
+  cavidad_oral     String @default("")
+  genito_urinario  String @default("")
+  locomotor        String @default("")
+  neurologico      String @default("")
+
+  consultation Consultation?
 }
 
 /// Plan de Trabajo
 model WorkPlan {
-  id          Int          @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   indications String
-  diagnoses   Diagnose[]
-  treatements Treatment[]
-  appointment Appointment?
+
+  diagnoses    Diagnose[]
+  treatements  Treatment[]
+  consultation Consultation?
 }
 
 model Diagnose {
-  id              Int              @id @default(autoincrement())
-  ICD10_code      String
-  id_workplan     Int
-  workplan        WorkPlan         @relation(fields: [id_workplan], references: [id])
+  id          Int    @id @default(autoincrement())
+  ICD10_code  String
+  id_workplan Int
+
+  workplan WorkPlan @relation(fields: [id_workplan], references: [id])
 }
 
 model Treatment {
-  id          Int      @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   id_workplan Int
   medication  String
   dose        String
-  workplan    WorkPlan @relation(fields: [id_workplan], references: [id])
+
+  workplan WorkPlan @relation(fields: [id_workplan], references: [id])
 }

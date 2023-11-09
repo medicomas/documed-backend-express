@@ -28,9 +28,9 @@ export class AppointmentService {
     try {
       const emptyAppointment = await prisma.appointment.create({
         data: {
-          anamnesis: "",
+          // anamnesis: "",
           date: new Date(),
-          has_ended: false,
+          has_attended: false,
           doctor: {
             connect: {
               id_user: id_doctor,
@@ -41,45 +41,7 @@ export class AppointmentService {
               id: id_patient,
             },
           },
-          physical_exploration: {
-            create: {
-              abdomen_y_pelvis: "",
-              ano_y_recto: "",
-              aspecto_general: "",
-              cabeza_y_cuello: "",
-              cardiovascular: "",
-              cavidad_oral: "",
-              genito_urinario: "",
-              locomotor: "",
-              neurologico: "",
-            },
-          },
-          vital_signs: {
-            create: {
-              presion_arterial: 0,
-              temperatura: 0,
-              frecuencia_respiratoria: 0,
-              frecuencia_cardiaca: 0,
-              peso: 0,
-              talla: 0,
-              imc: 0,
-            },
-          },
-          workplan: {
-            create: {
-              indications: "",
-              diagnoses: {
-                createMany: {
-                  data: [],
-                },
-              },
-              treatements: {
-                createMany: {
-                  data: [],
-                },
-              },
-            },
-          },
+          consultation: {}, // consulta vacía
         },
       });
       return {
@@ -100,8 +62,8 @@ export class AppointmentService {
   // vital signs -> updateVitalSigns
   // physical exploration -> updatePhysicalExploration
 
-  async updateVitalSigns(id_appointment: number, vitalSignsData: object) {
-    const idResult = idSchema.safeParse(id_appointment);
+  async updateVitalSigns(id_consultation: number, vitalSignsData: object) {
+    const idResult = idSchema.safeParse(id_consultation);
     if (!idResult.success) {
       return {
         vitalSigns: null,
@@ -121,11 +83,15 @@ export class AppointmentService {
     }
 
     try {
-      const updateVitalSigns = await prisma.vitalSigns.update({
+      const updateVitalSigns = await prisma.consultation.update({
         where: {
-          id: idResult.data,
+          id: id_consultation,
         },
-        data: dataResult.data,
+        data: {
+          vital_signs: {
+            update: dataResult.data,
+          },
+        },
       });
       return {
         vitalSigns: updateVitalSigns,
