@@ -44,7 +44,6 @@ model Doctor {
   document       String           @unique
   gender         String           @db.Char(1)
   appointment    Appointment[]
-  MedicalHistory MedicalHistory[]
 }
 
 // check ✅
@@ -99,45 +98,37 @@ model VitalSigns {
 model PhysicalExploration {
   id               Int          @id @default(autoincrement())
   appointment      Appointment?
-  abdomen_y_pelvis String?
-  ano_y_recto      String?
-  aspecto_general  String?
-  cabeza_y_cuello  String?
-  cardiovascular   String?
-  cavidad_oral     String?
-  genito_urinario  String?
-  locomotor        String?
-  neurologico      String?
+  abdomen_y_pelvis String       @default("")
+  ano_y_recto      String       @default("")
+  aspecto_general  String       @default("")
+  cabeza_y_cuello  String       @default("")
+  cardiovascular   String       @default("")
+  cavidad_oral     String       @default("")
+  genito_urinario  String       @default("")
+  locomotor        String       @default("")
+  neurologico      String       @default("")
 }
 
 /// Plan de Trabajo
 model WorkPlan {
   id          Int          @id @default(autoincrement())
   indications String
+  diagnoses   Diagnose[]
+  treatements Treatment[]
   appointment Appointment?
 }
 
 model Diagnose {
   id              Int              @id @default(autoincrement())
-  id_workplan     Int
   ICD10_code      String
-  medical_history MedicalHistory[]
+  id_workplan     Int
+  workplan        WorkPlan         @relation(fields: [id_workplan], references: [id])
 }
 
 model Treatment {
-  id             Int    @id @default(autoincrement())
-  id_appointment Int
-  id_workplan    Int
-  medication     String
-  dose           String
-}
-
-model MedicalHistory {
-  id             Int      @id @default(autoincrement())
-  id_doctor      Int
-  id_diagnostico Int
-  date           DateTime @db.Date
-
-  doctor   Doctor   @relation(fields: [id_doctor], references: [id_user])
-  diagnose Diagnose @relation(fields: [id_diagnostico], references: [id])
+  id          Int      @id @default(autoincrement())
+  id_workplan Int
+  medication  String
+  dose        String
+  workplan    WorkPlan @relation(fields: [id_workplan], references: [id])
 }
