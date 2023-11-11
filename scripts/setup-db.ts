@@ -2,7 +2,7 @@ import { prisma } from "../src/db";
 import chalk from "chalk";
 
 const SUPER_USER = {
-  email: "damaris@ieee.org",
+  email: "damaris@comp-soc.com",
   hashed_password:
     "51227fbc10cf81386272858f9b7d0261adb477d301154fbf9188a8a948cd9bdd",
   names: "Damaris Marian",
@@ -15,7 +15,7 @@ const SUPER_USER = {
 async function main() {
   // Check if the super user already exists
   const superUserExists = await prisma.user.findFirst({
-    where: { email: "damaris@ieee.org" },
+    where: { email: "damaris@comp-soc.com" },
   });
 
   if (!superUserExists) {
