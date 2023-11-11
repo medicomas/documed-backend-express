@@ -14,15 +14,15 @@ export const TreatmentSchema = z.object({
 });
 
 export const PhysicalExplorationSchema = z.object({
-  abdomen_y_pelvis: z.number(),
-  ano_y_recto: z.number(),
-  aspecto_general: z.number(),
-  cabeza_y_cuello: z.number(),
-  cardiovascular: z.number(),
-  cavidad_oral: z.number(),
-  genito_urinario: z.number(),
-  locomotor: z.number(),
-  neurologico: z.number(),
+  abdomen_y_pelvis: z.string(),
+  ano_y_recto: z.string(),
+  aspecto_general: z.string(),
+  cabeza_y_cuello: z.string(),
+  cardiovascular: z.string(),
+  cavidad_oral: z.string(),
+  genito_urinario: z.string(),
+  locomotor: z.string(),
+  neurologico: z.string(),
 });
 
 export const VitalSignsSchema = z.object({
@@ -35,10 +35,18 @@ export const VitalSignsSchema = z.object({
   imc: z.number(),
 });
 
-export const AppointmentSchema = z.object({
-  has_ended: z.boolean(),
-  date: z.string().datetime(),
+export const ConsultationSchema = z.object({
   anamnesis: z.string().min(1),
+});
+
+export const AppointmentSchema = z.object({
+  has_attended: z.boolean(),
+  date: z.string().datetime({ offset: true }),
+});
+
+export const MedicalAntecedentSchema = z.object({
+  clave: z.string(),
+  valor: z.string(),
 });
 
 export const idSchema = z.number().min(1).int();
@@ -49,3 +57,4 @@ export type Diagnose = z.infer<typeof DiagnoseSchema>;
 export type Treatment = z.infer<typeof TreatmentSchema>;
 export type PhysicalExploration = z.infer<typeof PhysicalExplorationSchema>;
 export type VitalSigns = z.infer<typeof VitalSignsSchema>;
+export type AntecedentSchema = z.infer<typeof MedicalAntecedentSchema>;

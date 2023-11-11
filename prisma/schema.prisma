@@ -61,6 +61,7 @@ model Patient {
   birthdate    DateTime? @db.Date
 
   appointments Appointment[]
+  antecedentes MedicalAntecedent[]
 }
 
 /// Cita
@@ -68,7 +69,7 @@ model Patient {
 /// el calendario, y tiene una fecha y hora determinada.
 model Appointment {
   id           Int      @id @default(autoincrement())
-  date         DateTime
+  date         DateTime @db.Date() ///to be modified in next commit
   has_attended Boolean  @default(false)
   id_patient   Int
   id_doctor    Int
@@ -93,6 +94,15 @@ model Consultation {
   vital_signs          VitalSigns          @relation(fields: [id_vitalsigns], references: [id])
   physical_exploration PhysicalExploration @relation(fields: [id_physicalexploration], references: [id])
   workplan             WorkPlan            @relation(fields: [id_workplan], references: [id])
+}
+
+///Antecedentes
+model MedicalAntecedent {
+  id         Int     @id @default(autoincrement())
+  name       String
+  value      String
+  patient    Patient @relation(fields: [id_patient], references: [id])
+  id_patient Int
 }
 
 /// Constantes Vitales
