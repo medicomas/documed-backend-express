@@ -121,7 +121,11 @@ export class AppointmentService {
   // ✅ Inicia la consulta para la cita {cita_id}.
   // Marca Appointment.has_attended=true y crea una consulta (Consultation) vacía para esa cita.
   // :id/citas/:cita_id/iniciar
-  async startAppointment(idPatient: number, idAppointment: number) {
+  async startAppointment(
+    idPatient: number,
+    idAppointment: number,
+    idDoctor: number,
+  ) {
     const service = new AppointmentService();
     const { patient, error } = await service.findPatientById(idPatient);
     const { appointment } = await service.findAppointmentById(idAppointment);
@@ -129,7 +133,7 @@ export class AppointmentService {
     if (patient && appointment) {
       try {
         const updatedAppointment = await prisma.appointment.update({
-          where: { id: idAppointment },
+          where: { id: idAppointment, id_doctor: idDoctor },
           data: { has_attended: true },
         });
         const emptyConsultation = await prisma.consultation.create({
