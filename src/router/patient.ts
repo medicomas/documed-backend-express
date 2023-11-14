@@ -85,11 +85,11 @@ router.delete("/:id", async (req, res) => {
 });
 
 // ✅ Crea una nueva cita; se crea sobre el paciente {id} y tiene una consulta (Consultation) inicialmente nula (null).
-router.post("/:id/citas/nueva", async (req, res) => {
+router.post("/:id/citas/nueva", authWithUserMiddleware, async (req, res) => {
   const { appointment, error, status } =
     await appointmentService.createEmptyAppointment(
       Number(req.params.id),
-      req.body.id_user,
+      Number(req.user?.id),
       req.body.date,
     );
   if (error) {
@@ -102,23 +102,28 @@ router.post("/:id/citas/nueva", async (req, res) => {
 });
 
 // ✅ Inicia la consulta para la cita {cita_id}.
-router.post(":id/citas/:cita_id/iniciar", async (req, res) => {
-  const { appointment, error, status, consultation } =
-    await appointmentService.startAppointment(
-      Number(req.params.id),
-      Number(req.params.cita_id),
-    );
-  if (error) {
-    res.status(status).send({
-      error: error,
-    });
-    return;
-  }
-  res.send({ consultation, appointment });
-});
+router.post(
+  "/:id/citas/:cita_id/iniciar",
+  authWithUserMiddleware,
+  async (req, res) => {
+    const { appointment, error, status, consultation } =
+      await appointmentService.startAppointment(
+        Number(req.params.id),
+        Number(req.params.cita_id),
+        Number(req.user?.id),
+      );
+    if (error) {
+      res.status(status).send({
+        error: error,
+      });
+      return;
+    }
+    res.send({ consultation, appointment });
+  },
+);
 
 // ✅ returns basic info of all patient's consultations
-router.get(":id/consultas/", async (req, res) => {
+router.get("/:id/consultas/", async (req, res) => {
   const { consultations, error, status } =
     await appointmentService.getBasicConsultation(Number(req.params.id));
   if (error) {
@@ -144,7 +149,7 @@ router.get("/:id/citas", async (req, res) => {
 });
 
 // ✅ La consulta {cid} del paciente {id}. Esta sí debe contener TODA la información de la consulta.
-router.get(":id/consultas/:cid", async (req, res) => {
+router.get("/:id/consultas/:cid", async (req, res) => {
   const { consultation, error, status } =
     await appointmentService.getFullConsultation(
       Number(req.params.id),
@@ -160,7 +165,7 @@ router.get(":id/consultas/:cid", async (req, res) => {
 });
 
 // ✅ Las constantes vitales del paciente para la cita {cid}
-router.put(":id/consultas/:cid/constantesvitales", async (req, res) => {
+router.put("/:id/consultas/:cid/constantesvitales", async (req, res) => {
   const { vitalSigns, error, status } =
     await appointmentService.updateVitalSigns(
       Number(req.params.id),
@@ -177,7 +182,7 @@ router.put(":id/consultas/:cid/constantesvitales", async (req, res) => {
 });
 
 // ✅ El plan de trabajo del paciente con id {id} en su consulta {cid}
-router.put(":id/consultas/:cid/plandetrabajo", async (req, res) => {
+router.put("/:id/consultas/:cid/plandetrabajo", async (req, res) => {
   const { workplan, error, status } = await appointmentService.updateWorkplan(
     Number(req.params.id),
     Number(req.params.cid),
