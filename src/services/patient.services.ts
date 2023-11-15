@@ -59,6 +59,8 @@ export class PatientService {
       };
     }
 
+    //falta validar existencia del id
+
     const dataResult = createPatientSchema.partial().safeParse(patientData);
 
     if (!dataResult.success) {
