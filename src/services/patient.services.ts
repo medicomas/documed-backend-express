@@ -11,7 +11,7 @@ export class PatientService {
         const patient = await prisma.patient.create({ data: result.data });
         return { patient, error: null };
       }
-      return { patient: null, error: result.error.message };
+      return { patient: null, error: result.error.formErrors };
     } catch (error) {
       console.log(error);
       return { patient: null, error: "something went wrong!" };
@@ -35,7 +35,7 @@ export class PatientService {
     const result = idSchema.safeParse(id);
 
     if (!result.success) {
-      return { patient: null, error: result.error.message, status: 400 };
+      return { patient: null, error: result.error.formErrors, status: 400 };
     }
 
     try {
@@ -54,7 +54,7 @@ export class PatientService {
     if (!idResult.success) {
       return {
         patient: null,
-        error: idResult.error.message,
+        error: idResult.error.formErrors,
         status: 400,
       };
     }
@@ -66,7 +66,7 @@ export class PatientService {
     if (!dataResult.success) {
       return {
         patient: null,
-        error: dataResult.error.message,
+        error: dataResult.error.formErrors,
         status: 400,
       };
     }

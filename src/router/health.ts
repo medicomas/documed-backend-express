@@ -11,6 +11,7 @@ router.get(
       status: "UP",
     }),
   docs({
+    description: "Returns the status of the server",
     responses: {
       200: {
         schema: z.object({

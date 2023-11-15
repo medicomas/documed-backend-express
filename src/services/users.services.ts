@@ -17,7 +17,7 @@ export class UsersService {
   async createUser(userData: object) {
     const result = createUserSchema.safeParse(userData);
     if (!result.success) {
-      return { user: null, error: result.error.errors[0].message, status: 400 };
+      return { user: null, error: result.error.formErrors, status: 400 };
     }
 
     const { email, names, surnames, password, roles } = result.data;
@@ -31,10 +31,15 @@ export class UsersService {
           hashed_password,
           email,
           roles: {
-            create: roles.map((roleName) => ({
-              name: roleName,
-            })),
+            connect: roles.map((role) => ({ name: role })),
           },
+        },
+        select: {
+          id: true,
+          names: true,
+          surnames: true,
+          email: true,
+          roles: true,
         },
       });
       return { user, error: null, status: 201 };
@@ -56,7 +61,11 @@ export class UsersService {
   async getAllUsers() {
     try {
       const users = await prisma.user.findMany({
-        include: {
+        select: {
+          id: true,
+          names: true,
+          surnames: true,
+          email: true,
           roles: true,
         },
       });
@@ -69,7 +78,7 @@ export class UsersService {
   async getById(id: string) {
     const result = idSchema.safeParse(Number(id));
     if (!result.success) {
-      return { user: null, error: result.error.errors[0].message, status: 400 };
+      return { user: null, error: result.error.formErrors, status: 400 };
     }
     const { data: userId } = result;
 
@@ -100,7 +109,7 @@ export class UsersService {
     // allow empty fields
     const result = updateUserSchema.partial().safeParse(userData);
     if (!result.success) {
-      return { user: null, error: result.error.errors[0].message, status: 400 };
+      return { user: null, error: result.error.formErrors, status: 400 };
     }
 
     const { names, surnames } = result.data;
@@ -114,6 +123,13 @@ export class UsersService {
           names,
           surnames,
           // roles: [], // TODO: update roles
+        },
+        select: {
+          id: true,
+          names: true,
+          surnames: true,
+          email: true,
+          roles: true,
         },
       });
       return { user, error: null, status: 200 };
@@ -142,6 +158,13 @@ export class UsersService {
         data: {
           hashed_password,
         },
+        select: {
+          id: true,
+          names: true,
+          surnames: true,
+          email: true,
+          roles: true,
+        },
       });
       return { user, error: null, status: 200 };
     } catch (error) {
@@ -152,7 +175,7 @@ export class UsersService {
   async deleteUser(id: string) {
     const result = idSchema.safeParse(Number(id));
     if (!result.success) {
-      return { user: null, error: result.error.errors[0].message, status: 400 };
+      return { user: null, error: result.error.formErrors, status: 400 };
     }
     const { data: userId } = result;
 
@@ -168,6 +191,13 @@ export class UsersService {
       const user = await prisma.user.delete({
         where: {
           id: userId,
+        },
+        select: {
+          id: true,
+          names: true,
+          surnames: true,
+          email: true,
+          roles: true,
         },
       });
       return { user, error: null, status: 200 };

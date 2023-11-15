@@ -53,10 +53,11 @@ function expressPathToOASPath(path: string) {
  */
 export function extractRouterDocumentation(path: string, router: Router) {
   const { stack } = router;
-  // prettier-ignore
   const routesByPath = groupBy(stack, (endpoint: any) => endpoint.route.path); // eslint-disable-line
   // Iterate over all the endpoints defined for the current router, grouped by Path
   // (a path can have multiple endpoints, typically multiple HTTP methods)
+
+  let allRoutesDocumented = true;
   for (const [route, endpoints] of Object.entries(routesByPath)) {
     // Gather information about each endpoint
     const endpointsInfo = endpoints.map((endpoint) => {
@@ -66,6 +67,9 @@ export function extractRouterDocumentation(path: string, router: Router) {
       const documentation = stack.find(
           (layer: any) => layer.name === DOCS_MIDDLEWARE_NAME, // eslint-disable-line
       )?.handle;
+      const requiresAuth = stack.some(
+        (layer: any) => layer.name.includes('auth'), // eslint-disable-line
+      );
 
       if (!documentation) {
         console.warn(
@@ -75,13 +79,14 @@ export function extractRouterDocumentation(path: string, router: Router) {
             path + route,
           )} has no documentation for the frontend team >:(`,
         );
+        allRoutesDocumented = false;
       }
 
       return {
         method,
         path: expressPathToOASPath(`/${path}${route}`),
         tags: [path],
-        requiresAuth: true,
+        requiresAuth: requiresAuth,
         params: endpoint.keys.map(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (param: any) =>
@@ -102,6 +107,11 @@ export function extractRouterDocumentation(path: string, router: Router) {
       if (!endpoint.docs) return;
       docsRegistry.registerPath(endpointToSchema(endpoint));
     });
+  }
+  if (allRoutesDocumented) {
+    console.log(
+      `${chalk.green("[nice]")} ${chalk.cyan(path)} is fully documented!`,
+    );
   }
 }
 

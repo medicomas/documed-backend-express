@@ -28,7 +28,7 @@ export type EndpointResponses = {
 };
 
 export interface EndpointDocumentation {
-  description?: string;
+  description: string;
   body?: z.ZodTypeAny | null;
   verbose?: boolean;
   responses: EndpointResponses;

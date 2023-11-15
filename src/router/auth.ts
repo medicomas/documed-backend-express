@@ -51,6 +51,7 @@ router.post(
     });
   },
   docs({
+    description: `Recibe un email y un password, y devuelve un token de autenticación que luego se usará para autenticar peticiones subsiguientes.`,
     body: userLoginSchema,
     responses: {
       200: {

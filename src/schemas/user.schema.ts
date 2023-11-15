@@ -50,6 +50,23 @@ export const updateUserSchema = z.object({
   roles: z.array(userRoleSchema).min(1),
 });
 
+/**
+ * The purpose of this schema is to document the returning type of GET /user/:id
+}
+ */
+export const userResponseSchema = z.object({
+  id: z.number().int(),
+  email: z.string().email(),
+  names: z.string().min(1),
+  surnames: z.string().min(1),
+  roles: z.array(
+    z.object({
+      id: z.number().int(),
+      name: z.string(),
+    }),
+  ),
+});
+
 export const idSchema = z.number().min(1).int();
 
 export const userLoginSchema = z.object({
