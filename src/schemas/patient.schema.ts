@@ -10,6 +10,10 @@ export const createPatientSchema = z.object({
   birthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 
+export const patientResponseSchema = createPatientSchema.extend({
+  id: z.number(),
+});
+
 export const idSchema = z.number().min(1).int();
 
 export type CreatePatientInput = z.infer<typeof createPatientSchema>;

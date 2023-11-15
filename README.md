@@ -1,5 +1,7 @@
 # documed
 
+[![deploy-on-digital-ocean](https://github.com/medicomas/documed-backend-express/actions/workflows/deploy.yml/badge.svg)](https://github.com/medicomas/documed-backend-express/actions/workflows/deploy.yml)
+
 ## Requirements
 
 - NodeJS 18.18
@@ -19,7 +21,7 @@
 
 Following [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/):
 
-- Format would be (type-of-change)[scope]: (description).
+- Format would be [type-of-change](scope): (description).
 Types would be feat, fix, build, ci, docs, style, refactor, test, etc.
 
 e.g.: `feat(architecture): initial project structure and setup`
