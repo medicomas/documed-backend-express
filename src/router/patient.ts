@@ -509,7 +509,7 @@ router.put(
 }[]
  */
 
-const medicalAntecedentSchema = z.object({
+const medicalAntecedentResponseSchema = z.object({
   id: z.number(),
   name: z.string(),
   value: z.string(),
@@ -535,7 +535,62 @@ router.get(
     description: `Obtiene los antecedentes de un paciente. Los antecedentes no están atados a ninguna cita. En caso de no haber, devuelve un array vacío.`,
     responses: {
       200: {
-        schema: z.array(medicalAntecedentSchema),
+        schema: z.array(medicalAntecedentResponseSchema),
+      },
+    },
+  }),
+);
+
+router.post(
+  "/:id/antecedentes",
+  authMiddleware,
+  async (req, res) => {
+    const { medicalAntecedent, error, status } =
+      await appointmentService.createMedicalAntecedent(
+        Number(req.params.id),
+        req.body,
+      );
+    if (error) {
+      res.status(status).send({
+        error: error,
+      });
+      return;
+    }
+    res.send(medicalAntecedent);
+  },
+  docs({
+    description: `Crea un nuevo antecedente para el paciente {id}.`,
+    body: medicalAntecedentResponseSchema,
+    responses: {
+      200: {
+        schema: medicalAntecedentResponseSchema,
+      },
+    },
+  }),
+);
+
+router.delete(
+  "/:id/antecedentes/:aid",
+  authMiddleware,
+  async (req, res) => {
+    const { medicalAntecedent, error, status } =
+      await appointmentService.deleteMedicalAntecedent(
+        Number(req.params.id),
+        Number(req.params.aid),
+      );
+    if (error) {
+      res.status(status).send({
+        error: error,
+      });
+      return;
+    }
+    res.send(medicalAntecedent);
+  },
+  docs({
+    description: `Elimina el antecedente {aid} del paciente {id}.`,
+    responses: {
+      200: {
+        schema: medicalAntecedentResponseSchema,
       },
     },
   }),

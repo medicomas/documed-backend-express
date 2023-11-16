@@ -45,8 +45,8 @@ export const AppointmentSchema = z.object({
 });
 
 export const MedicalAntecedentSchema = z.object({
-  clave: z.string(),
-  valor: z.string(),
+  name: z.string(),
+  value: z.string(),
 });
 
 export const idSchema = z.number().min(1).int();

@@ -1,5 +1,6 @@
 import { prisma } from "../db";
 import {
+  MedicalAntecedentSchema,
   PhysicalExplorationSchema,
   VitalSignsSchema,
   WorkPlanSchema,
@@ -477,6 +478,68 @@ export class AppointmentService {
     try {
       const result = await prisma.medicalAntecedent.findMany({
         where: {
+          patient: {
+            id: idPatient,
+          },
+        },
+      });
+
+      return {
+        error: null,
+        medicalAntecedent: result,
+        status: 200,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        medicalAntecedent: null,
+        error: "something went wrong!",
+        status: 500,
+      };
+    }
+  }
+
+  async createMedicalAntecedent(idPatient: number, data: object) {
+    try {
+      const validationResult = MedicalAntecedentSchema.safeParse(data);
+      if (!validationResult.success) {
+        return {
+          error: validationResult.error.formErrors,
+          medicalAntecedent: null,
+          status: 400,
+        };
+      }
+      const result = await prisma.medicalAntecedent.create({
+        data: {
+          patient: {
+            connect: {
+              id: idPatient,
+            },
+          },
+          ...validationResult.data,
+        },
+      });
+
+      return {
+        error: null,
+        medicalAntecedent: result,
+        status: 201,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        medicalAntecedent: null,
+        error: "something went wrong!",
+        status: 500,
+      };
+    }
+  }
+
+  async deleteMedicalAntecedent(idPatient: number, idAntecedent: number) {
+    try {
+      const result = await prisma.medicalAntecedent.delete({
+        where: {
+          id: idAntecedent,
           patient: {
             id: idPatient,
           },
