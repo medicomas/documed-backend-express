@@ -3,12 +3,14 @@ import { UsersService } from "../services/users.services";
 import { docs } from "../docs/middleware";
 import { createUserSchema, userResponseSchema } from "../schemas/user.schema";
 import { z } from "zod";
+import { authMiddleware } from "../middlewares/auth";
 
 const router = Router();
 const userService = new UsersService();
 
 router.get(
   "/",
+  authMiddleware,
   async (req, res) => {
     const { users, error, status } = await userService.getAllUsers();
     if (error) {
@@ -31,6 +33,7 @@ router.get(
 
 router.post(
   "/",
+  authMiddleware,
   async (req, res) => {
     const { user, error, status } = await userService.createUser(req.body);
     if (error) {
@@ -54,6 +57,7 @@ router.post(
 
 router.get(
   "/:id",
+  authMiddleware,
   async (req, res) => {
     const { user, error, status } = await userService.getById(req.params.id);
     if (error) {
@@ -77,6 +81,7 @@ router.get(
 // WARNING: destructive operation
 router.delete(
   "/:id",
+  authMiddleware,
   async (req, res) => {
     const { user, error, status } = await userService.deleteUser(req.params.id);
     if (error) {

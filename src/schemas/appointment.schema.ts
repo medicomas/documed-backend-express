@@ -39,11 +39,6 @@ export const ConsultationSchema = z.object({
   anamnesis: z.string().min(1),
 });
 
-export const AppointmentSchema = z.object({
-  has_attended: z.boolean(),
-  date: z.string().datetime({ offset: true }),
-});
-
 export const MedicalAntecedentSchema = z.object({
   name: z.string(),
   value: z.string(),
@@ -51,7 +46,6 @@ export const MedicalAntecedentSchema = z.object({
 
 export const idSchema = z.number().min(1).int();
 
-export type AppointmentInput = z.infer<typeof AppointmentSchema>;
 export type WorkPlan = z.infer<typeof WorkPlanSchema>;
 export type Diagnose = z.infer<typeof DiagnoseSchema>;
 export type Treatment = z.infer<typeof TreatmentSchema>;
