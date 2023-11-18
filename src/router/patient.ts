@@ -533,7 +533,7 @@ router.post(
   },
   docs({
     description: `Crea un nuevo antecedente para el paciente {id}.`,
-    body: medicalAntecedentResponseSchema,
+    body: medicalAntecedentResponseSchema.omit({ id: true }),
     responses: {
       200: {
         schema: medicalAntecedentResponseSchema,
