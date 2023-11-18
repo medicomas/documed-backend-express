@@ -6,6 +6,7 @@ import { z } from "zod";
 import {
   createPatientSchema,
   patientResponseSchema,
+  medicalAntecedentResponseSchema,
 } from "../schemas/patient.schema";
 import { AppointmentService } from "../services/appointment.services";
 import {
@@ -500,21 +501,46 @@ router.put(
   }),
 );
 
-/**
-{
-  id: number;
-  name: string;
-  value: string;
-  id_patient: number;
-}[]
- */
+import { ConsultationService } from "../services/consultation.services";
 
-const medicalAntecedentResponseSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  value: z.string(),
-  id_patient: z.number(),
-});
+router.post(
+  "/:id/consulta/:cid",
+  async (req, res) => {
+    const { id, cid } = req.params;
+    const idSchema = z.number();
+    if (!idSchema.safeParse(id).success || !idSchema.safeParse(cid).success) {
+      res.status(400).send({
+        error: "id and cid must be numbers",
+      });
+      return;
+    }
+    const consultationService = new ConsultationService();
+
+    const { error, status } = await consultationService.updateConsultation(
+      Number(id),
+      Number(cid),
+      req.body,
+    );
+
+    if (error) {
+      res.status(status).send({
+        error: error,
+      });
+      return;
+    }
+    res.status(status).end();
+  },
+  docs({
+    description: `Actualiza la información de la consulta generada de un paciente.
+    Abarca plan de trabajo, tratamiento, diagnóstico,
+    exploración física y signos vitales.`,
+    responses: {
+      201: {
+        schema: z.object({}),
+      },
+    },
+  }),
+);
 
 // ✅ Obtiene los antecedentes de un paciente. Los antecedentes no están atados a ninguna cita.
 router.get(

@@ -8,7 +8,34 @@ export class PatientService {
     try {
       const result = createPatientSchema.safeParse(patientData);
       if (result.success) {
-        const patient = await prisma.patient.create({ data: result.data });
+        result.data;
+        const patient = await prisma.patient.create({
+          data: {
+            ...result.data,
+            antecedentes: {
+              createMany: {
+                data: [
+                  {
+                    name: "RAM",
+                    value: "",
+                  },
+                  {
+                    name: "DM2",
+                    value: "",
+                  },
+                  {
+                    name: "HTA",
+                    value: "",
+                  },
+                  {
+                    name: "QX",
+                    value: "",
+                  },
+                ],
+              },
+            },
+          },
+        });
         return { patient, error: null };
       }
       return { patient: null, error: result.error.formErrors };

@@ -13,6 +13,13 @@ export const createPatientSchema = z.object({
     .transform((value) => new Date(value)),
 });
 
+export const medicalAntecedentResponseSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  value: z.string(),
+  id_patient: z.number(),
+});
+
 export const patientResponseSchema = createPatientSchema.extend({
   id: z.number(),
 });
