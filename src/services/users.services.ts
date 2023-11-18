@@ -5,14 +5,10 @@ import {
   idSchema,
   updateUserSchema,
 } from "../schemas/user.schema";
+import { sha256 } from "../utils";
 
 export class UsersService {
   constructor() {}
-
-  private hashPassword(password: string) {
-    // TODO: hash password or smth like that
-    return password;
-  }
 
   async createUser(userData: object) {
     const result = createUserSchema.safeParse(userData);
@@ -21,7 +17,7 @@ export class UsersService {
     }
 
     const { email, names, surnames, password, roles } = result.data;
-    const hashed_password = this.hashPassword(password);
+    const hashed_password = sha256(password);
 
     try {
       const user = await prisma.user.create({
@@ -149,7 +145,7 @@ export class UsersService {
   }
 
   async changeUserPassword(id: string, newPassword: string) {
-    const hashed_password = this.hashPassword(newPassword);
+    const hashed_password = sha256(newPassword);
     try {
       const user = await prisma.user.update({
         where: {
