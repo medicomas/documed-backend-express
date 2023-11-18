@@ -30,7 +30,7 @@ const planWorkSchema = z.object({
   ),
 });
 
-const consultationSchema = z.object({
+export const consultationSchema = z.object({
   anamnesis: z.string().min(1),
   physicalExploration: PhysicalExplorationSchema,
   vitalSigns: VitalSignsSchema,

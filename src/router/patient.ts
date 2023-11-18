@@ -13,6 +13,7 @@ import {
   PhysicalExplorationSchema,
   WorkPlanSchema,
 } from "../schemas/appointment.schema";
+import { consultationSchema } from "../services/consultation.services";
 
 const router = Router();
 const patientService = new PatientService();
@@ -212,26 +213,6 @@ La fecha que recibe esta ruta debe un objeto parseable por \`new Date(date)\``,
   }),
 );
 
-/*
-{
-  id: number;
-  anamnesis: string;
-  id_appointment: number;
-  id_vitalsigns: number;
-  id_physicalexploration: number;
-  id_workplan: number;
-}
-*/
-
-const consultationSchema = z.object({
-  id: z.number(),
-  anamnesis: z.string(),
-  id_appointment: z.number(),
-  id_vitalsigns: z.number(),
-  id_physicalexploration: z.number(),
-  id_workplan: z.number(),
-});
-
 // ✅ Inicia la consulta para la cita {cita_id}.
 router.post(
   "/:id/citas/:cita_id/iniciar",
@@ -264,7 +245,14 @@ empezar a ser rellenados por el médico.
       200: {
         schema: z.object({
           appointment: appointmentSchema,
-          consultation: consultationSchema,
+          consultation: z.object({
+            id: z.number(),
+            anamnesis: z.string(),
+            id_appointment: z.number(),
+            id_vitalsigns: z.number(),
+            id_physicalexploration: z.number(),
+            id_workplan: z.number(),
+          }),
         }),
       },
     },
@@ -534,6 +522,7 @@ router.post(
     description: `Actualiza la información de la consulta generada de un paciente.
     Abarca plan de trabajo, tratamiento, diagnóstico,
     exploración física y signos vitales.`,
+    body: consultationSchema,
     responses: {
       201: {
         schema: z.object({}),

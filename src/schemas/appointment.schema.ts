@@ -35,10 +35,6 @@ export const VitalSignsSchema = z.object({
   imc: z.number(),
 });
 
-export const ConsultationSchema = z.object({
-  anamnesis: z.string().min(1),
-});
-
 export const MedicalAntecedentSchema = z.object({
   name: z.string(),
   value: z.string(),
