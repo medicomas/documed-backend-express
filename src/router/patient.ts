@@ -13,7 +13,10 @@ import {
   PhysicalExplorationSchema,
   WorkPlanSchema,
 } from "../schemas/appointment.schema";
-import { consultationSchema } from "../services/consultation.services";
+import {
+  ConsultationService,
+  consultationSchema,
+} from "../services/consultation.services";
 
 const router = Router();
 const patientService = new PatientService();
@@ -366,6 +369,51 @@ Esta ruta puede ser útil para mostrar una consulta en específico. Contiene TOD
     responses: {
       200: {
         schema: consultationSchema,
+      },
+    },
+  }),
+);
+
+router.put(
+  "/:id/consultas/:cid",
+  async (req, res) => {
+    const consultationService = new ConsultationService();
+    const idSchema = z.number().int();
+    if (
+      !idSchema.safeParse(req.params.id).success ||
+      !idSchema.safeParse(req.params.cid).success
+    ) {
+      res.status(400).send({
+        error: "Invalid id",
+      });
+      return;
+    }
+
+    const { error, status } = await consultationService.updateConsultation(
+      Number(req.params.id),
+      Number(req.params.cid),
+      req.body,
+    );
+
+    if (error) {
+      res.status(status).send({
+        error: error,
+      });
+      return;
+    }
+
+    res.status(status).send({
+      success: true,
+    });
+  },
+  docs({
+    description: `Edita la consulta {cid} del paciente {id}. Todos los campos son opcionales.`,
+    body: consultationSchema.partial(),
+    responses: {
+      200: {
+        schema: z.object({
+          success: z.boolean(),
+        }),
       },
     },
   }),
