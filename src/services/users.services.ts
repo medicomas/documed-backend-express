@@ -29,6 +29,20 @@ export class UsersService {
           roles: {
             connect: roles.map((role) => ({ name: role })),
           },
+          Admin: roles.some((role) => role === "ADMIN")
+            ? {
+                create: {},
+              }
+            : undefined,
+          doctor: roles.some((role) => role === "DOCTOR")
+            ? {
+                create: {
+                  documentType: "DNI", // TODO: currently hardcoding this
+                  document: "75413034", // we need to update the schema requirements and the UI
+                  gender: "F",
+                },
+              }
+            : undefined,
         },
         select: {
           id: true,

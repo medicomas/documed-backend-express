@@ -34,6 +34,19 @@ async function main() {
         },
       },
     });
+    await prisma.doctor.create({
+      data: {
+        documentType: "DNI",
+        document: "75413034",
+        gender: "F",
+        id_user: superUser.id,
+      },
+    });
+    await prisma.admin.create({
+      data: {
+        id_user: superUser.id,
+      },
+    });
     roles = await prisma.userRole.findMany();
     done("Created super user with id =", superUser.id);
   } else {
