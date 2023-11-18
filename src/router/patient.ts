@@ -489,48 +489,6 @@ router.put(
   }),
 );
 
-import { ConsultationService } from "../services/consultation.services";
-
-router.post(
-  "/:id/consulta/:cid",
-  async (req, res) => {
-    const { id, cid } = req.params;
-    const idSchema = z.number();
-    if (!idSchema.safeParse(id).success || !idSchema.safeParse(cid).success) {
-      res.status(400).send({
-        error: "id and cid must be numbers",
-      });
-      return;
-    }
-    const consultationService = new ConsultationService();
-
-    const { error, status } = await consultationService.updateConsultation(
-      Number(id),
-      Number(cid),
-      req.body,
-    );
-
-    if (error) {
-      res.status(status).send({
-        error: error,
-      });
-      return;
-    }
-    res.status(status).end();
-  },
-  docs({
-    description: `Actualiza la información de la consulta generada de un paciente.
-    Abarca plan de trabajo, tratamiento, diagnóstico,
-    exploración física y signos vitales.`,
-    body: consultationSchema,
-    responses: {
-      201: {
-        schema: z.object({}),
-      },
-    },
-  }),
-);
-
 // ✅ Obtiene los antecedentes de un paciente. Los antecedentes no están atados a ninguna cita.
 router.get(
   "/:id/antecedentes",
