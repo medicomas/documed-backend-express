@@ -38,7 +38,7 @@ export class UsersService {
             ? {
                 create: {
                   documentType: "DNI", // TODO: currently hardcoding this
-                  document: "75413034", // we need to update the schema requirements and the UI
+                  document: Math.random().toString().substring(0, 6), // we need to update the schema requirements and the UI
                   gender: "F",
                 },
               }
